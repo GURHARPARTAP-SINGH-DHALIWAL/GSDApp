@@ -6,8 +6,10 @@ const app=express();
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'Views'));
 
+app.use(express.static('assets'));
+
 app.get('/',function(req,res){
-    return res.render('home');
+    return res.render('sign_in');
 });
 
 
