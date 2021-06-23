@@ -9,6 +9,7 @@ const passport=require('passport');
 const passportLocal=require('./config/passport-local-strategy');
 // const MongoStore=require('connect-mongo')(session);
 const MongoStore=require('connect-mongo')(session);
+const Post=require('./models/post');
 
 const app=express();
 app.set('view engine','ejs');
@@ -43,9 +44,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.setAuthenticatedUser);
 
-app.get('/',passport.checkAuthentication,function(req,res){
-    
-    return res.render('home');
+app.get('/',passport.checkAuthentication,async function(req,res){
+    let post=await Post.find({}).populate('user').sort('-createdAt');
+
+    return res.render('home',{
+        posts:post
+    });
     
 });
 
@@ -68,7 +72,17 @@ app.post('/create',function(req,res){
     });
 });
 
-
+app.post('/create-post',function(req,res){
+   
+ 
+    Post.create({content:req.body.content,
+                user:req.user._id
+    },function(err,post){
+        if(err){console.log(err);return ;}
+        console.log(post);
+        return res.redirect('back');
+    });
+});
 app.get('/sign-in',function(req,res){
     if(req.isAuthenticated())
     return res.redirect('/');

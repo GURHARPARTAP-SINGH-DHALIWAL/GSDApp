@@ -14,18 +14,57 @@
   
    <div id="container">
     <div id="nav">
+        <div id="name">
+            <i class="fab fa-whatsapp" id="font"></i>
+        <h2 id="text">GSDApp</h2>
+        </div>
         <div id="sign-out-button">
     <a href="/sign-out">Sign Out</a>
     </div>
     </div>
-    <div id="chat"></div>
+    <div id="chat">
+      
+            <%for(post of posts){%>
+              <%  if(post.user.id!=user.id){%>
+                  <div id="message">
+                      <div id="user_name"><%=post.user.username%></div>
+                      <div id="content"><%=post.content%></div>
+                  </div>
+                     
+                <%} else {%>
+                    <div id="message" style="left: 53%; background-color: palegreen ;">
+                        <div id="user_name">You</div>
+                        <div id="content"><%=post.content%></div>
+                    </div>
+
+                <%}%>
+                <%}%>
+        
+        
+    </div>
     <div id="send">
-        <form action="/create" method="post" id="form">
-            <input type="text" placeholder="Say Something" id="inp">
-            <button type="submit" id="button"><i class="fas fa-paper-plane" id="button" id="icon"></i></button>
+       
+        <form action="/create-post" method="post" id="form">
+            <input type="text" placeholder="Say Something" id="inp" name ="content">
+            <button type="submit" id="button"><i class="fas fa-paper-plane"  id="icon"></i></button>
         </form>
     </div>
    </div>
    
 </body>
+<script>
+    function generateRandomColor()
+{
+    var randomColor = '#'+Math.floor(Math.random()*16777215).toString(16);
+    return randomColor;
+    //random color will be freshly served
+}
+// document.body.style.backgroundColor = generateRandomColor() // -> #e1ac94
+  let arr=document.querySelectorAll("#user_name");
+  console.log(arr);
+   for(var i=0;i<arr.length;i++)
+   {
+       arr[i].style.color=generateRandomColor();
+   }
+</script>
 </html>
