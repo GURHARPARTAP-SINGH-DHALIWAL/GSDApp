@@ -7,6 +7,8 @@ const cookieparser=require('cookie-parser');
 const session=require('express-session');
 const passport=require('passport');
 const passportLocal=require('./config/passport-local-strategy');
+// const MongoStore=require('connect-mongo')(session);
+const MongoStore=require('connect-mongo')(session);
 
 const app=express();
 app.set('view engine','ejs');
@@ -23,7 +25,18 @@ app.use(session({
     resave:false,
     cookie:{
         maxAge:(1000*60*50)
+    },
+    store:new MongoStore({
+        mongooseConnection:db,
+        autoRemove:'disabled'
+    },
+    function(err)
+    {
+        console.log(err||'MongoStore Setup ok');
     }
+    
+    
+    )
 }));
 
 app.use(passport.initialize());
@@ -57,6 +70,8 @@ app.post('/create',function(req,res){
 
 
 app.get('/sign-in',function(req,res){
+    if(req.isAuthenticated())
+    return res.redirect('/');
     return res.render('sign_in');
 });
 
@@ -67,10 +82,15 @@ app.post('/create-session',passport.authenticate(
     return res.redirect('/');
 });
 app.get('/sign-up',function(req,res){
+    if(req.isAuthenticated())
+    return res.redirect('/');
     return res.render('sign_up');
 });
 
-
+app.get('/sign-out',function(req,res){
+    req.logout();
+    return res.redirect('/sign-in');
+});
 app.listen(port,function(err){
     if(err){
         console.log('Error in Starting ');
